@@ -4,8 +4,108 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nuevo personaje</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    
+    <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="home.html">Series</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="newpersonaje.html">Nuevo personaje</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="updatepersonaje.html">Modificar personaje</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Series
+                        </a>
+                        <ul class="dropdown-menu" id="drop-menu"></ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class='p-3'>
+        <h1>Crear personaje</h1>
+        <form>
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input type="text" class="form-control" id="nombre"/>
+            </div>
+            <div class="mb-3">
+                <label for="imagen" class="form-label">Imagen</label>
+                <input type="url" class="form-control" id="imagen"/>
+            </div>
+            <div class="mb-3">
+                <label for="serie" class="form-label">Serie</label>
+                <select class="form-select" id="select"></select>
+            </div>
+            <button type="button" class='btn btn-success w-100' id="crear">Crear personaje</button>
+        </form>
+    </div>
+
+    <script src="js/bootstrap.bundle.js"></script>
+    <script src="js/jquery-3.7.1.js"></script>
+    <script>
+        let url = 'https://apiseriespersonajes.azurewebsites.net/';
+
+        $(document).ready(function(){
+            let endpoint = 'api/series';
+
+            $.getJSON(url + endpoint, function(data){
+                $.each(data, function(index, serie){
+                    let a = $('<a>', {
+                        href: 'serie.html?id='+serie.idSerie,
+                        text: serie.nombre,
+                        class: 'dropdown-item'
+                    })
+
+                    let li = $('<li>');
+
+                    $(li).append(a);
+                    $('#drop-menu').append(li);
+
+                    let op = $('<option>', {
+                        text: serie.nombre,
+                        value: serie.idSerie
+                    })
+
+                    $('#select').append(op);
+                })
+            })
+
+            $('#crear').click(function(){
+                let endpoint = 'api/personajes';
+
+                let id = 0;
+                let nombre = $('#nombre').val();
+                let imagen = $('#imagen').val();
+                let serie = parseInt($('#select').val());
+
+                $.ajax({
+                    url: url + endpoint,
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        'idPersonaje': id,
+                        'nombre': nombre,
+                        'imagen': imagen,
+                        'idSerie': serie
+                    }),
+                    success: function(){
+                        console.log('creado')
+                        location.href = '/serie.html?idserie='+serie;
+                    }
+                })
+            });
+        })
+    </script>
 </body>
 </html>
