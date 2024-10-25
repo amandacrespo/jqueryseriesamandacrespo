@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serie</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="home.html">Series</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="newpersonaje.html">Nuevo personaje</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="updatepersonaje.html">Modificar personaje</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Series
+                        </a>
+                        <ul class="dropdown-menu" id="drop-menu"></ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div id="contenido"></div>
+
+    <script src="js/bootstrap.bundle.js"></script>
+    <script src="js/jquery-3.7.1.js"></script>
+    <script>
+        let url = 'https://apiseriespersonajes.azurewebsites.net/';
+
+        $(document).ready(function(){
+            let endpoint = 'api/series';
+
+            $.getJSON(url + endpoint, function(data){
+                $.each(data, function(index, serie){
+                    let a = $('<a>', {
+                        href: 'serie.html?id='+serie.idSerie,
+                        text: serie.nombre,
+                        class: 'dropdown-item'
+                    })
+
+                    let li = $('<li>');
+
+                    $(li).append(a);
+                    $('#drop-menu').append(li);
+                })
+            })
+
+            let params = new URLSearchParams(location.search);
+            let id = params.get('id');
+            let idserie = params.get('idserie');
+
+            if(id){
+                contenidoSerie(id);
+            } else {
+                contenidoPersonajes(idserie);
+            }
+        })
+
+        function contenidoSerie(id){
+
+            let endpoint = 'api/series/'+id;
+
+            $.getJSON(url + endpoint, function(data){
+                let contenido =  `<div class="card w-100">
+                                    <img src="${data.imagen}" class="card-img-top w-25" alt="${data.nombre}"/>
+                                    <div class="card-body">
+                                        <h5 class="card-title">${data.nombre}</h5>
+                                        <p class="card-text">IMDB: ${data.puntuacion}</p>
+                                        <a href="serie.html?idserie=${data.idSerie}" class="btn btn-primary w-100">Personajes</a>
+                                    </div>
+                                </div>`;
+                    $('#contenido').html(contenido);
+            })
+        }
+
+        function contenidoPersonajes(idserie){
+
+            let endpoint = 'api/personajes';
+
+            $.getJSON(url + endpoint, function(data){
+
+                let personajes = [];
+
+                for (const personaje of data) {
+                    if(personaje.idSerie == idserie){
+                        personajes.push(personaje)
+                    }
+                }
+
+                let contenido =  `<div class='p-3'>
+                                    <h1>Personas de ${idserie}</h1>
+                                    <a href="serie.html?id=${idserie}" class="btn btn-danger w-100">Volver a serie</a>
+                                    <table class='table'>
+                                        <thead>
+                                            <tr>
+                                                <th>Personaje</th>
+                                                <th>Imagen</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>`;
+
+                for (const personaje of personajes) {
+                    contenido += `<tr>
+                                    <td>${personaje.nombre}</td>
+                                    <td>
+                                        <img src="${personaje.imagen}" width=200/>
+                                    </td>
+                                </tr>`;
+                }
+
+                contenido += '</tbody></table></div>';
+
+                $('#contenido').html(contenido);
+            })
+        }
+    </script>
+</body>
+</html>

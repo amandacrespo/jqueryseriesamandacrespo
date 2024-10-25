@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <meta name="theme-color" content="#712cf9">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="home.html">Series</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="newpersonaje.html">Nuevo personaje</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="updatepersonaje.html">Modificar personaje</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Series
+                        </a>
+                        <ul class="dropdown-menu" id="drop-menu"></ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class='p-3'>
+        <h1>Home</h1>
+        <img src='https://www.adslzone.net/app/uploads-adslzone.net/2019/11/Disney-1.jpg' width=500/>
+    </div>
+
+    <script src="js/bootstrap.bundle.js"></script>
+    <script src="js/jquery-3.7.1.js"></script>
+    <script>
+        let url = 'https://apiseriespersonajes.azurewebsites.net/';
+
+        $(document).ready(function(){
+            let endpoint = 'api/series';
+
+            $.getJSON(url + endpoint, function(data){
+                $.each(data, function(index, serie){
+                    let a = $('<a>', {
+                        href: 'serie.html?id='+serie.idSerie,
+                        text: serie.nombre,
+                        class: 'dropdown-item'
+                    })
+
+                    let li = $('<li>');
+
+                    $(li).append(a);
+                    $('#drop-menu').append(li);
+                })
+            })
+        })
+    </script>
+</body>
+</html>
